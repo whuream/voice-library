@@ -13,7 +13,7 @@ class Audio(db.Model):
     description = db.Column(db.String)
     chapter_number = db.Column(db.Integer)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user._id'))
     book_id = db.Column(db.Integer, db.ForeignKey('book._id'))
 
     user = db.relationship('User', primaryjoin='Audio.user_id == User._id', backref='audios')

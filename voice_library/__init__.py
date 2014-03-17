@@ -7,9 +7,14 @@ from flask.ext.bootstrap import Bootstrap
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URL'] = 'sqlite:///voice_library.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///voice_library.db'
 app.config['SECRET_KEY'] = 'kamisama'
 
 Bootstrap(app)
 
 db = SQLAlchemy(app)
+
+from module.audio import Audio
+from module.book import Book
+from module.user import User
+
