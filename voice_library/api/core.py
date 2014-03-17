@@ -44,10 +44,20 @@ def get_book_info():
         ret = {}
         print book.audios
         for audio in book.audios:
-            d = {'file_url': audio.file_url, 'description': audio.description, 'chapter_number': audio.chapter_number,
-                 'user_name': audio.user.username}
+            d = {'file_url': audio.file_url, 'description': audio.description,
+                 'chapter_number': audio.chapter_number, 'user_id': audio.user_id}
             print jsonify(**d).get_data()
             ret[str(audio._id)] = jsonify(**d).get_data()
 
         return jsonify(**ret)
 
+@app.route('/api/get_user_info', methods=['POST'])
+def get_user_info():
+    uid = request.form['uid']
+    user = User.query.filter(User._id == uid).first()
+    if not user:
+        return '0'
+    else:
+        ret = {'uid': user._id, 'id': user.id, 'name': user.username,
+               'email': user.email, 'type': user.type}
+        return jsonify(**ret)
