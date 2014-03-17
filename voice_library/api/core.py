@@ -16,9 +16,9 @@ def verify_user():
         session['uid'] = user._id
         #print session.viewitems()
         #print dir(session)
-        return '1'
+        return jsonify(code='1', msg='succeed, setting cookies')
     else:
-        return '0'
+        return jsonify(code='0', msg='failed, invalid user_id or password')
 
 @app.route('/api/get_book_list', methods=['GET'])
 def get_book_list():
@@ -39,7 +39,7 @@ def get_book_info():
     book_id = request.form['bid']
     book = Book.query.filter(Book._id == book_id).first()
     if not book:
-        return '0'
+        return jsonify(code='0', msg='invalid book id')
     else:
         ret = {}
         print book.audios
@@ -56,7 +56,7 @@ def get_user_info():
     uid = request.form['uid']
     user = User.query.filter(User._id == uid).first()
     if not user:
-        return '0'
+        return jsonify(code='0', msg='invalid user id')
     else:
         ret = {'uid': user._id, 'id': user.id, 'name': user.username,
                'email': user.email, 'type': user.type}
