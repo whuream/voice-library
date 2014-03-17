@@ -4,10 +4,17 @@
     <title></title>
 </head>
 <body>
+    <h1>Log in test</h1>
     <form action="http://127.0.0.1:5000/api/verify_user" method="post">
         <input type="text" name="uid" />
         <input type="text" name="password" />
         <input type="submit" value="submit" />
+    </form>
+
+    <h1>Get book info test</h1>
+    <form action="http://127.0.0.1:5000/api/get_book_info" method="post">
+        <input type="text" name="bid">
+        <input type="submit">
     </form>
 </body>
 </html>

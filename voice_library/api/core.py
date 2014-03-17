@@ -29,9 +29,25 @@ def get_book_list():
         d = {'name': book.name, 'author': book.author, 'cover': book.cover,
              'content': book.content, 'file_url': book.file_url, 'description': book.description,
              'chapter_number': book.chapter_number, 'date': book.date}
-        print jsonify(**d).get_data()
+        #print jsonify(**d).get_data()
         ret[str(book._id)] = jsonify(**d).get_data()
 
     return jsonify(**ret)
 
+@app.route('/api/get_book_info', methods=['POST'])
+def get_book_info():
+    book_id = request.form['bid']
+    book = Book.query.filter(Book._id == book_id).first()
+    if not book:
+        return '0'
+    else:
+        ret = {}
+        print book.audios
+        for audio in book.audios:
+            d = {'file_url': audio.file_url, 'description': audio.description, 'chapter_number': audio.chapter_number,
+                 'user_name': audio.user.username}
+            print jsonify(**d).get_data()
+            ret[str(audio._id)] = jsonify(**d).get_data()
+
+        return jsonify(**ret)
 
