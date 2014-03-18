@@ -80,5 +80,26 @@
         <input type="submit">
     </form>
 
+    <h1>Update Book</h1>
+    <form action="api/update_book" method="post" enctype="multipart/form-data">
+        bid<input type="text" name="id">
+        name<input type="text" name="name">
+        author<input type="text" name="author">
+        description<input type="text" name="description">
+        chapter number<input type="text" name="chapter_number">
+        cover<input type="file" name="cover">
+        book<input type="file" name="book">
+        <input type="submit">
+    </form>
+
+    <h1>Update Audio</h1>
+    <form action="api/update_audio" method="post" enctype="multipart/form-data">
+        audio id<input type="text" name="audio_id">
+        chapter number<input type="text" name="chapter_number">
+        description<input type="text" name="description">
+        audio<input type="file" name="audio">
+        <input type="submit">
+    </form>
+
 </body>
 </html>

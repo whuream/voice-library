@@ -208,7 +208,8 @@ def delete_audio():
     db.session.delete(audio)
     db.session.commit()
 
-    os.remove(audio.file_url)
+    if audio.file_url:
+        os.remove(audio.file_url)
 
     return jsonify(code='1', msg='delete audio succeed')
 
@@ -245,7 +246,7 @@ def update_book():
     if not c_book:
         return jsonify(code='0', msg='invalid book id')
 
-    if chapter_number < c_book.chapter_number:
+    if chapter_number < c_book.first().chapter_number:
         return jsonify(code='0', msg='chapter number error')
 
     d = {'name': name, 'author': author, 'description': description,
@@ -269,11 +270,45 @@ def update_book():
         book.save(book_path)
         d['file_url'] = book_path
 
-    book.update(d)
+    c_book.update(d)
     db.session.commit()
 
-    return jsonify(code='1', msg='insert book succeed')
+    return jsonify(code='1', msg='update book succeed')
 
 
+@app.route('/api/update_audio', methods=['POST'])
+def update_audio():
+    audio_id = request.form['audio_id']
+    chapter_number = request.form['chapter_number']
+    description = request.form['description']
 
+    audio = request.files['audio']
+
+    c_audio = Audio.query.filter(Audio._id == audio_id)
+
+    if not c_audio:
+        return jsonify(code='0', msg='invalid audio id')
+
+    book = c_audio.first().book
+
+    if not 0 < int(chapter_number) <= book.chapter_number:
+        #print chapter_number
+        #print book.chapter_number
+        return jsonify(code='0', msg='invalid chapter number')
+
+    d = {'chapter_number': chapter_number, 'description': description}
+
+    file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
+    audio_name = file_name + '.' +secure_filename(audio.filename).split('.')[-1]
+
+    audio_path = os.path.join(AUDIO_DIR, audio_name)
+
+    if audio.filename:
+        audio.save(audio_path)
+        d['file_url'] = audio_path
+
+    c_audio.update(d)
+    db.session.commit()
+
+    return jsonify(code='1', msg='update audio succeed')
 
