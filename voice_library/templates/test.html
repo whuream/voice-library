@@ -4,23 +4,81 @@
     <title></title>
 </head>
 <body>
-    <h1>Log in test</h1>
-    <form action="http://127.0.0.1:5000/api/verify_user" method="post">
-        <input type="text" name="uid" />
-        <input type="text" name="password" />
+    <h1>Log in</h1>
+    <form action="api/verify_user" method="post">
+        uid<input type="text" name="uid" />
+        password<input type="text" name="password" />
         <input type="submit" value="submit" />
     </form>
 
-    <h1>Get book info test</h1>
-    <form action="http://127.0.0.1:5000/api/get_book_info" method="post">
-        <input type="text" name="bid">
+    <h1>Get Book list</h1>
+    <a href="api/get_book_list">click me</a>
+
+    <h1>Get book info</h1>
+    <form action="api/get_book_info" method="post">
+        bid<input type="text" name="bid">
         <input type="submit">
     </form>
 
-    <h1>Get user info test</h1>
-    <form action="http://127.0.0.1:5000/api/get_user_info" method="post">
-        <input type="text" name='uid'>
+    <h1>Get user info</h1>
+    <form action="api/get_user_info" method="post">
+        uid<input type="text" name='uid'>
         <input type="submit">
     </form>
+
+    <h1>Insert User</h1>
+    <form action="api/insert_user" method="post">
+        uid<input type="text" name="uid">
+        password<input type="text" name="password">
+        <input type="submit">
+    </form>
+
+    <h1>Insert Book</h1>
+    <form action="api/insert_book" method="post" enctype="multipart/form-data">
+        name<input type="text" name="name">
+        author<input type="text" name="author">
+        description<input type="description" name="description">
+        chapter_number<input type="text" name="chapter_number">
+        cover<input type="file" name="cover">
+        book<input type="file" name="book">
+        <input type="submit">
+    </form>
+
+    <h1>Insert Audio</h1>
+    <form action="api/insert_audio" method="post" enctype="multipart/form-data">
+        book id<input type="text" name="book_id">
+        chapter number<input type="text" name="chapter_number">
+        description<input type="text" name="description">
+        audio<input type="file" name="audio">
+        <input type="submit">
+    </form>
+
+    <h1>Delete user</h1>
+    <form action="api/delete_user" method="post">
+        username<input type="text" name="name">
+        password<input type="text" name="password">
+        <input type="submit">
+    </form>
+
+    <h1>Delete book</h1>
+    <form action="api/delete_book" method="post">
+        book id<input type="text" name="book_id">
+        <input type="submit">
+    </form>
+
+    <h1>Delete Audio</h1>
+    <form action="api/delete_audio" method="post">
+        audio id<input type="text" name="id">
+        <input type="submit">
+    </form>
+
+    <h1>Update User</h1>
+    <form action="api/update_user" method="post">
+        user name<input type="text" name="name">
+        password<input type="text" name="password">
+        new password<input type="text" name="new_pass">
+        <input type="submit">
+    </form>
+
 </body>
 </html>
