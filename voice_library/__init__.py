@@ -20,7 +20,7 @@ COVER_DIR = os.path.join(BASE_DIR, 'cover')
 
 for dir_name in [AUDIO_DIR, BOOK_DIR, COVER_DIR]:
     if not os.path.exists(dir_name):
-        os.mkdir(dir_name)
+        os.makedirs(dir_name)
 
 Bootstrap(app)
 

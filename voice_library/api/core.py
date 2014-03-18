@@ -94,7 +94,7 @@ def insert_book():
     cover = request.files['cover']
     book = request.files['book']
 
-    file_name = datetime.today().strftime('%Y%M%d%H%M%f')
+    file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
     #print file_name
 
     cover_name = file_name + '.' +secure_filename(cover.filename).split('.')[-1]
@@ -103,8 +103,14 @@ def insert_book():
     cover_path = os.path.join(COVER_DIR, cover_name)
     book_path = os.path.join(BOOK_DIR, book_name)
 
-    cover.save(cover_path)
-    book.save(book_path)
+    if cover.filename:
+        cover.save(cover_path)
+    else:
+        cover_path = ''
+    if book.filename:
+        book.save(book_path)
+    else:
+        book_path = ''
 
     new_book = Book(name, 1, chapter_number, '', book_path, author, cover_path, description)
     db.session.add(new_book)
@@ -131,11 +137,15 @@ def insert_audio():
         #print book.chapter_number
         return jsonify(code='0', msg='invalid chapter number')
 
-    file_name = datetime.today().strftime('%Y%M%d%H%M%f')
+    file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
     audio_name = file_name + '.' +secure_filename(audio.filename).split('.')[-1]
 
     audio_path = os.path.join(AUDIO_DIR, audio_name)
-    audio.save(audio_path)
+
+    if audio.filename:
+        audio.save(audio_path)
+    else:
+        audio_path = ''
 
     new_audio = Audio(audio_path, 1, book_id, chapter_number, description)
     db.session.add(new_audio)
@@ -178,8 +188,10 @@ def delete_book():
     db.session.delete(book)
     db.session.commit()
 
-    os.remove(book.file_url)
-    os.remove(book.cover)
+    if book.file_url:
+        os.remove(book.file_url)
+    if book.cover:
+        os.remove(book.cover)
 
     return jsonify(code='1', msg='delete book succeed')
 
@@ -217,9 +229,11 @@ def update_user():
 
     return jsonify(code='1', msg='succeed update user info')
 
-"""
+
 @app.route('/api/update_book', methods=['POST'])
 def update_book():
+    id = request.form['id']
+    name = request.form['name']
     author = request.form['author']
     description = request.form['description']
     chapter_number = request.form['chapter_number']
@@ -227,24 +241,39 @@ def update_book():
     cover = request.files['cover']
     book = request.files['book']
 
-    file_name = datetime.today().strftime('%Y%M%d%H%M%f')
+    c_book = Book.query.filter(Book._id == id)
+    if not c_book:
+        return jsonify(code='0', msg='invalid book id')
+
+    if chapter_number < c_book.chapter_number:
+        return jsonify(code='0', msg='chapter number error')
+
+    d = {'name': name, 'author': author, 'description': description,
+         'chapter_number': chapter_number}
+
+    file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
     #print file_name
 
-    cover_name = file_name + '.' +secure_filename(cover.filename).split('.')[-1]
+    cover_name = file_name + '.' + secure_filename(cover.filename).split('.')[-1]
     book_name = file_name + '.' + secure_filename(book.filename).split('.')[-1]
 
     cover_path = os.path.join(COVER_DIR, cover_name)
     book_path = os.path.join(BOOK_DIR, book_name)
 
-    cover.save(cover_path)
-    book.save(book_path)
 
-    new_book = Book(name, 1, chapter_number, '', book_path, author, cover_path, description)
-    db.session.add(new_book)
+    if cover.filename:
+        cover.save(cover_path)
+        d['cover'] = cover_path
+
+    if book.filename:
+        book.save(book_path)
+        d['file_url'] = book_path
+
+    book.update(d)
     db.session.commit()
 
     return jsonify(code='1', msg='insert book succeed')
-"""
+
 
 
 
