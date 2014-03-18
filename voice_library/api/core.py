@@ -24,6 +24,11 @@ def verify_user():
         return jsonify(code='0', msg='failed, invalid user_id or password')
 
 
+@app.route('/api/logout', methods=['GET'])
+def logout():
+    session['uid'] = None
+    return jsonify(code='1', msg='succeed, cleaning cookies')
+
 @app.route('/api/get_book_list', methods=['GET'])
 def get_book_list():
     books = Book.query.all()
