@@ -31,13 +31,13 @@ A library not only text books but also audio books.
 
 #### API Detail
 
-*   ##### `/api/verify_user`
+*   `/api/verify_user`
     ##### POST DATA
     *   `uid`: user name
     *   `password`: user password
 
 
-*   ##### `/api/get_book_list`
+*   `/api/get_book_list`
     ##### RETURN DATA
     *   `[num]`: book id
     *   `[json]`: book info
@@ -51,7 +51,7 @@ A library not only text books but also audio books.
         *   `date`: book created date
 
 
-*   ##### `/api/get_book_info`
+*   `/api/get_book_info`
     ##### POST DATA
     *   `bid`: book id
 
@@ -64,7 +64,7 @@ A library not only text books but also audio books.
         *   `user_id`: uploader 's id
 
 
-*   ##### `/api/get_user_info`
+*   `/api/get_user_info`
     ##### POST DATA
     *   `uid`: user id
 
@@ -76,13 +76,13 @@ A library not only text books but also audio books.
     *   `type`: user type
 
 
-*   ##### `/api/insert_user`
+*   `/api/insert_user`
     ##### POST DATA
     *   `uid`: user name
     *   `password`: user password
 
 
-*   ##### `/api/insert_book`
+*   `/api/insert_book`
     ##### POST DATA
     *   `name`: book name
     *   `author`: book author
@@ -92,7 +92,7 @@ A library not only text books but also audio books.
     *   `book`: book content(file)
 
 
-*   ##### `/api/insert_audio`
+*   `/api/insert_audio`
     ##### POST DATA
     *   `book_id`: book id
     *   `chapter_number`: chapter number match this audio
@@ -100,30 +100,30 @@ A library not only text books but also audio books.
     *   `audio`: audio file
 
 
-*   ##### `/api/delete_user`
+*   `/api/delete_user`
     ##### POST DATA
     *   `name`: user name
     *   `password`: password
 
 
-*   ##### `/api/delete_book`
+*   `/api/delete_book`
     ##### POST DATA
     *   `book_id`: book id
 
 
-*   ##### `/api/delete_audio`
+*   `/api/delete_audio`
     ##### POST DATA
     *   `id`: audio id
 
 
-*   ##### `/api/update_user`
+*   `/api/update_user`
     ##### POST DATA
     *   `name`: user name
     *   `password`: user password
     *   `new_pass`: new password
 
 
-*   ##### `/api/update_book`
+*   `/api/update_book`
     ##### POST DATA
     *   `id`: book id
     *   `name`: book new name
@@ -134,7 +134,7 @@ A library not only text books but also audio books.
     *   `book`: new book(file)
 
 
-*   ##### `/api/update_audio`
+*   `/api/update_audio`
     ##### POST DATA
     *   `audio_id`: audio id
     *   `chapter_number`: new chapter number
