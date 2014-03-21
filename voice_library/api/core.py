@@ -33,15 +33,15 @@ def logout():
 @app.route('/api/get_book_list', methods=['GET'])
 def get_book_list():
     books = Book.query.all()
-    t = []
-    ret = {}
+    book_list = []
+    ret = {'book': book_list}
     for book in books:
         d = {'name': book.name, 'author': book.author, 'cover': book.cover,
              'content': book.content, 'file_url': book.file_url, 'description': book.description,
              'chapter_number': book.chapter_number, 'date': book.date}
         # TODO add uploader 's id here
         #print jsonify(**d).get_data()
-        ret[str(book._id)] = jsonify(**d).get_data()
+        ret['book'].append(d)
 
     return jsonify(**ret)
 
@@ -53,13 +53,14 @@ def get_book_info():
     if not book:
         return jsonify(code='0', msg='invalid book id')
     else:
-        ret = {}
+        audio_list = []
+        ret = {'audio': audio_list}
         print book.audios
         for audio in book.audios:
             d = {'file_url': audio.file_url, 'description': audio.description,
                  'chapter_number': audio.chapter_number, 'user_id': audio.user_id}
-            print jsonify(**d).get_data()
-            ret[str(audio._id)] = jsonify(**d).get_data()
+            #print jsonify(**d).get_data()
+            ret['audio'].append(d)
 
         return jsonify(**ret)
 

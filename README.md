@@ -39,8 +39,7 @@ A library not only text books but also audio books.
 
 *   `/api/get_book_list`
     ##### RETURN DATA
-    *   `[num]`: book id
-    *   `[json]`: book info
+    *   `book`: book list:
         *   `name`: book name
         *   `author`: book author
         *   `cover`: book cover(url)
@@ -56,8 +55,7 @@ A library not only text books but also audio books.
     *   `bid`: book id
 
     ##### RETURN DATA
-    *   `[num]`: audio id
-    *   `[json]`: audio info
+    *   `audio`: audio list:
         *   `file_url`: audio file(url)
         *   `description`: audio description
         *   `chapter_number`: chapter of book
