@@ -13,6 +13,7 @@ A library not only text books but also audio books.
 ### API
 
 |*API*              |*method* |*return value* |*verification* |
+|-------------------|:-------:|:-------------:|:-------------:|
 |/api/verify_user   |post     |1/0            |yes            |
 |/api/logout        |get      |1              |no             |
 |/api/get_book_list |get      |book list      |no             |
