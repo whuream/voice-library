@@ -253,7 +253,7 @@ def update_book():
     book = request.files['book']
 
     c_book = Book.query.filter(Book._id == id)
-    if not c_book:
+    if not c_book.first():
         return jsonify(code='0', msg='invalid book id')
 
     if chapter_number < c_book.first().chapter_number:
