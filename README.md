@@ -12,21 +12,21 @@ A library not only text books but also audio books.
 
 ### API
 
-|| *API* || *method* || *return value* || *verification* ||
-|| /api/verify_user || post || 1/0 || yes
-|| /api/logout || get || 1 || no
-|| /api/get_book_list || get || book list || no
-|| /api/get_book_info || post || 0/book info || no
-|| /api/get_user_info || post || 0/user info || no
-|| /api/insert_user || post || 0/1 || no
-|| /api/insert_book || post || 1 || no
-|| /api/insert_audio || post || 0/1 || no
-|| /api/delete_user || post || 0/1 || no
-|| /api/delete_book || post || 0/1 || no
-|| /api/delete_audio || post || 0/1 || no
-|| /api/update_user || post || 0/1 || no
-|| /api/update_book || post || 0/1 || no
-|| /api/update_audio || post || 0/1 || no
+|*API*              |*method* |*return value* |*verification* |
+|/api/verify_user   |post     |1/0            |yes            |
+|/api/logout        |get      |1              |no             |
+|/api/get_book_list |get      |book list      |no             |
+|/api/get_book_info |post     |0/book info    |no             |
+|/api/get_user_info |post     |0/user info    |no             |
+|/api/insert_user   |post     |0/1            |no             |
+|/api/insert_book   |post     |1              |no             |
+|/api/insert_audio  |post     |0/1            |no             |
+|/api/delete_user   |post     |0/1            |no             |
+|/api/delete_book   |post     |0/1            |no             |
+|/api/delete_audio  |post     |0/1            |no             |
+|/api/update_user   |post     |0/1            |no             |
+|/api/update_book   |post     |0/1            |no             |
+|/api/update_audio  |post     |0/1            |no             |
 
 ### Android app
 
