@@ -29,6 +29,7 @@ def logout():
     session['uid'] = None
     return jsonify(code='1', msg='succeed, cleaning cookies')
 
+
 @app.route('/api/get_book_list', methods=['GET'])
 def get_book_list():
     books = Book.query.all()
@@ -38,6 +39,7 @@ def get_book_list():
         d = {'name': book.name, 'author': book.author, 'cover': book.cover,
              'content': book.content, 'file_url': book.file_url, 'description': book.description,
              'chapter_number': book.chapter_number, 'date': book.date}
+        # TODO add uploader 's id here
         #print jsonify(**d).get_data()
         ret[str(book._id)] = jsonify(**d).get_data()
 
@@ -64,6 +66,7 @@ def get_book_info():
 
 @app.route('/api/get_user_info', methods=['POST'])
 def get_user_info():
+    # TODO change uid to user name here
     uid = request.form['uid']
     user = User.query.filter(User._id == uid).first()
     if not user:
@@ -180,6 +183,7 @@ def delete_user():
 
 @app.route('/api/delete_book', methods=['POST'])
 def delete_book():
+    # TODO change book id here to book name
     book_id = request.form['book_id']
 
     book = Book.query.filter(Book._id == book_id).first()
