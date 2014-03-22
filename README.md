@@ -20,7 +20,7 @@ A library not only text books but also audio books.
 |/api/get_book_info |post     |0/book info    |no             |
 |/api/get_user_info |post     |0/user info    |no             |
 |/api/insert_user   |post     |0/1            |no             |
-|/api/insert_book   |post     |1              |no             |
+|/api/insert_book   |post     |0/1            |no             |
 |/api/insert_audio  |post     |0/1            |no             |
 |/api/delete_user   |post     |0/1            |no             |
 |/api/delete_book   |post     |0/1            |no             |
@@ -33,7 +33,7 @@ A library not only text books but also audio books.
 
 *   `/api/verify_user`
     ##### POST DATA
-    *   `uid`: user name
+    *   `id`: user name
     *   `password`: user password
 
 

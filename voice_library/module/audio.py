@@ -9,7 +9,7 @@ class Audio(db.Model):
     __tablename__ = 'audio'
 
     _id = db.Column(db.Integer, primary_key=True)
-    file_url = db.Column(db.String, unique=True)
+    file_url = db.Column(db.String)
     description = db.Column(db.String)
     chapter_number = db.Column(db.Integer)
 

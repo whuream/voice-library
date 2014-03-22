@@ -11,10 +11,10 @@ from werkzeug.utils import secure_filename
 
 @app.route('/api/verify_user', methods=['POST'])
 def verify_user():
-    uid = request.form['uid']
+    id = request.form['id']
     password = request.form['password']
 
-    user = User.query.filter(and_(User.id == uid, User.password == password)).first()
+    user = User.query.filter(and_(User.id == id, User.password == password)).first()
     if user:
         session['uid'] = user._id
         #print session.viewitems()
@@ -103,6 +103,10 @@ def insert_book():
     cover = request.files['cover']
     book = request.files['book']
 
+    c_book = Book.query.filter(Book.name == name).first()
+    if c_book:
+        return jsonify(code='0', msg='this book name has been used')
+
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
     #print file_name
 
@@ -189,7 +193,7 @@ def delete_book():
     book = Book.query.filter(Book.name == book_name).first()
 
     if not book:
-        return jsonify(code='0', msg='invalid book id')
+        return jsonify(code='0', msg='invalid book name')
 
     if book.audios:
         return jsonify(code='0', msg='this book has audio files, delete those files first')
@@ -231,7 +235,7 @@ def update_user():
     new_pass = request.form['new_pass']
 
     user = User.query.filter(and_(User.id == name, User.password == password))
-    if not user:
+    if not user.first():
         return jsonify(code='0', msg='invalid user name')
 
     user.update({'password': new_pass})
@@ -251,14 +255,14 @@ def update_book():
     cover = request.files['cover']
     book = request.files['book']
 
-    c_book = Book.query.filter(Book._id == id)
+    c_book = Book.query.filter(Book.name == name)
     if not c_book.first():
-        return jsonify(code='0', msg='invalid book id')
+        return jsonify(code='0', msg='invalid book name')
 
-    if chapter_number < c_book.first().chapter_number:
-        return jsonify(code='0', msg='chapter number error')
+    #if chapter_number < c_book.first().chapter_number:
+    #    return jsonify(code='0', msg='chapter number error')
 
-    d = {'new_name': new_name, 'author': author, 'description': description,
+    d = {'name': new_name, 'author': author, 'description': description,
          'chapter_number': chapter_number}
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')

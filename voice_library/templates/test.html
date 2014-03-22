@@ -6,7 +6,7 @@
 <body>
     <h1>Log in</h1>
     <form action="api/verify_user" method="post">
-        uid<input type="text" name="uid" />
+        id<input type="text" name="id" />
         password<input type="text" name="password" />
         <input type="submit" value="submit" />
     </form>
@@ -19,19 +19,19 @@
 
     <h1>Get book info</h1>
     <form action="api/get_book_info" method="post">
-        bid<input type="text" name="bid">
+        book name<input type="text" name="book_name">
         <input type="submit">
     </form>
 
     <h1>Get user info</h1>
     <form action="api/get_user_info" method="post">
-        uid<input type="text" name='uid'>
+        id<input type="text" name='id'>
         <input type="submit">
     </form>
 
     <h1>Insert User</h1>
     <form action="api/insert_user" method="post">
-        uid<input type="text" name="uid">
+        id<input type="text" name="id">
         password<input type="text" name="password">
         <input type="submit">
     </form>
@@ -49,7 +49,7 @@
 
     <h1>Insert Audio</h1>
     <form action="api/insert_audio" method="post" enctype="multipart/form-data">
-        book id<input type="text" name="book_id">
+        book name<input type="text" name="book_name">
         chapter number<input type="text" name="chapter_number">
         description<input type="text" name="description">
         audio<input type="file" name="audio">
@@ -65,7 +65,7 @@
 
     <h1>Delete book</h1>
     <form action="api/delete_book" method="post">
-        book id<input type="text" name="book_id">
+        book name<input type="text" name="book_name">
         <input type="submit">
     </form>
 
@@ -85,8 +85,8 @@
 
     <h1>Update Book</h1>
     <form action="api/update_book" method="post" enctype="multipart/form-data">
-        bid<input type="text" name="id">
         name<input type="text" name="name">
+        new name<input type="text" name="new_name">
         author<input type="text" name="author">
         description<input type="text" name="description">
         chapter number<input type="text" name="chapter_number">
