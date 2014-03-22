@@ -48,8 +48,8 @@ def get_book_list():
 
 @app.route('/api/get_book_info', methods=['POST'])
 def get_book_info():
-    book_id = request.form['bid']
-    book = Book.query.filter(Book._id == book_id).first()
+    book_name = request.form['book_name']
+    book = Book.query.filter(Book.name == book_name).first()
     if not book:
         return jsonify(code='0', msg='invalid book id')
     else:
@@ -58,7 +58,8 @@ def get_book_info():
         print book.audios
         for audio in book.audios:
             d = {'file_url': audio.file_url, 'description': audio.description,
-                 'chapter_number': audio.chapter_number, 'user_id': audio.user_id}
+                 'chapter_number': audio.chapter_number, 'user_id': audio.user_id,
+                 'audio_id': audio._id}
             #print jsonify(**d).get_data()
             ret['audio'].append(d)
 
@@ -67,23 +68,22 @@ def get_book_info():
 
 @app.route('/api/get_user_info', methods=['POST'])
 def get_user_info():
-    # TODO change uid to user name here
-    uid = request.form['uid']
-    user = User.query.filter(User._id == uid).first()
+    id = request.form['id']
+    user = User.query.filter(User.id == id).first()
     if not user:
         return jsonify(code='0', msg='invalid user id')
     else:
-        ret = {'uid': user._id, 'id': user.id, 'name': user.username,
+        ret = {'name': user.username,
                'email': user.email, 'type': user.type}
         return jsonify(**ret)
 
 
 @app.route('/api/insert_user', methods=['POST'])
 def insert_user():
-    id = request.form['uid']
+    id = request.form['id']
     password = request.form['password']
 
-    if User.query.filter(User._id == id).first():
+    if User.query.filter(User.id == id).first():
         return jsonify(code='0', msg='failed, this id has been used')
 
     new_user = User(id, password)
@@ -130,13 +130,13 @@ def insert_book():
 
 @app.route('/api/insert_audio', methods=['POST'])
 def insert_audio():
-    book_id = request.form['book_id']
+    book_name = request.form['book_name']
     chapter_number = request.form['chapter_number']
     description = request.form['description']
 
     audio = request.files['audio']
 
-    book = Book.query.filter(Book._id == book_id).first()
+    book = Book.query.filter(Book.name == book_name).first()
 
     if not book:
         return jsonify(code='0', msg='invalid book id')
@@ -156,7 +156,7 @@ def insert_audio():
     else:
         audio_path = ''
 
-    new_audio = Audio(audio_path, 1, book_id, chapter_number, description)
+    new_audio = Audio(audio_path, 1, book._id, chapter_number, description)
     db.session.add(new_audio)
     db.session.commit()
 
@@ -185,9 +185,9 @@ def delete_user():
 @app.route('/api/delete_book', methods=['POST'])
 def delete_book():
     # TODO change book id here to book name
-    book_id = request.form['book_id']
+    book_name = request.form['book_name']
 
-    book = Book.query.filter(Book._id == book_id).first()
+    book = Book.query.filter(Book.name == book_name).first()
 
     if not book:
         return jsonify(code='0', msg='invalid book id')
@@ -243,8 +243,8 @@ def update_user():
 
 @app.route('/api/update_book', methods=['POST'])
 def update_book():
-    id = request.form['id']
     name = request.form['name']
+    new_name = request.form['new_name']
     author = request.form['author']
     description = request.form['description']
     chapter_number = request.form['chapter_number']
@@ -259,7 +259,7 @@ def update_book():
     if chapter_number < c_book.first().chapter_number:
         return jsonify(code='0', msg='chapter number error')
 
-    d = {'name': name, 'author': author, 'description': description,
+    d = {'new_name': new_name, 'author': author, 'description': description,
          'chapter_number': chapter_number}
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')

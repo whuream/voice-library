@@ -52,7 +52,7 @@ A library not only text books but also audio books.
 
 *   `/api/get_book_info`
     ##### POST DATA
-    *   `bid`: book id
+    *   `book_name`: book name
 
     ##### RETURN DATA
     *   `audio`: audio list:
@@ -60,15 +60,14 @@ A library not only text books but also audio books.
         *   `description`: audio description
         *   `chapter_number`: chapter of book
         *   `user_id`: uploader 's id
+        *   `audio_id`: audio id
 
 
 *   `/api/get_user_info`
     ##### POST DATA
-    *   `uid`: user id
+    *   `id`: user id
 
     ##### RETURN DATA
-    *   `uid`: user id in database
-    *   `id`: user id
     *   `name`: user name
     *   `email`: user email
     *   `type`: user type
@@ -76,7 +75,7 @@ A library not only text books but also audio books.
 
 *   `/api/insert_user`
     ##### POST DATA
-    *   `uid`: user name
+    *   `id`: user name
     *   `password`: user password
 
 
@@ -92,7 +91,7 @@ A library not only text books but also audio books.
 
 *   `/api/insert_audio`
     ##### POST DATA
-    *   `book_id`: book id
+    *   `book_name`: book id
     *   `chapter_number`: chapter number match this audio
     *   `description`: audio description
     *   `audio`: audio file
@@ -106,7 +105,7 @@ A library not only text books but also audio books.
 
 *   `/api/delete_book`
     ##### POST DATA
-    *   `book_id`: book id
+    *   `book_name`: book name
 
 
 *   `/api/delete_audio`
@@ -123,8 +122,8 @@ A library not only text books but also audio books.
 
 *   `/api/update_book`
     ##### POST DATA
-    *   `id`: book id
-    *   `name`: book new name
+    *   `name`: book name
+    *   `new_name`: book new name
     *   `author`: book new author
     *   `description`: book new description
     *   `chapter_number`: book new chapter number
