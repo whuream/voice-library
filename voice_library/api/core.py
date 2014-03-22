@@ -184,7 +184,6 @@ def delete_user():
 
 @app.route('/api/delete_book', methods=['POST'])
 def delete_book():
-    # TODO change book id here to book name
     book_name = request.form['book_name']
 
     book = Book.query.filter(Book.name == book_name).first()
