@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///voice_library.db'
 app.config['SECRET_KEY'] = 'kamisama'
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+app.config['JSON_AS_ASCII'] = False
 
 
 BASE_DIR = os.path.join(os.path.curdir, 'data')
