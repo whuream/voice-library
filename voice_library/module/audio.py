@@ -9,8 +9,8 @@ class Audio(db.Model):
     __tablename__ = 'audio'
 
     _id = db.Column(db.Integer, primary_key=True)
-    file_url = db.Column(db.String)
-    description = db.Column(db.String)
+    file_url = db.Column(db.String(200))
+    description = db.Column(db.String(2000))
     chapter_number = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user._id'))

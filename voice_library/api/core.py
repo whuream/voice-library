@@ -8,6 +8,22 @@ import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
+def save_file(path, file):
+    bucket = Bucket('t')
+
+    bucket.put()
+
+    bucket.put_object(path, file)
+
+def get_file_url(path):
+    bucket = Bucket('t')
+    bucket.put()
+    return bucket.generate_url(path)
+
+def delete_file(path):
+    bucket = Bucket('t')
+    bucket.put()
+    bucket.delete_object(path)
 
 @app.route('/api/verify_user', methods=['POST'])
 def verify_user():
@@ -36,8 +52,8 @@ def get_book_list():
     book_list = []
     ret = {'book': book_list}
     for book in books:
-        d = {'name': book.name, 'author': book.author, 'cover': book.cover,
-             'content': book.content, 'file_url': book.file_url, 'description': book.description,
+        d = {'name': book.name, 'author': book.author, 'cover': get_file_url(book.cover),
+             'content': book.content, 'file_url': get_file_url(book.file_url), 'description': book.description,
              'chapter_number': book.chapter_number, 'date': book.date}
         # TODO add uploader 's id here
         #print jsonify(**d).get_data()
@@ -57,7 +73,7 @@ def get_book_info():
         ret = {'audio': audio_list}
         print book.audios
         for audio in book.audios:
-            d = {'file_url': audio.file_url, 'description': audio.description,
+            d = {'file_url': get_file_url(audio.file_url), 'description': audio.description,
                  'chapter_number': audio.chapter_number, 'user_id': audio.user_id,
                  'audio_id': audio._id}
             #print jsonify(**d).get_data()
@@ -117,11 +133,14 @@ def insert_book():
     book_path = os.path.join(BOOK_DIR, book_name)
 
     if cover.filename:
-        cover.save(cover_path)
+        #save_file('1.txt', 'hello, world')
+        save_file(cover_path, cover)
+        #cover.save(cover_path)
     else:
         cover_path = ''
     if book.filename:
-        book.save(book_path)
+        save_file(book_path, book)
+        #book.save(book_path)
     else:
         book_path = ''
 
@@ -156,7 +175,8 @@ def insert_audio():
     audio_path = os.path.join(AUDIO_DIR, audio_name)
 
     if audio.filename:
-        audio.save(audio_path)
+        save_file(audio_path, audio)
+        #audio.save(audio_path)
     else:
         audio_path = ''
 
@@ -202,9 +222,11 @@ def delete_book():
     db.session.commit()
 
     if book.file_url:
-        os.remove(book.file_url)
+        #os.remove(book.file_url)
+        delete_file(book.file_url)
     if book.cover:
-        os.remove(book.cover)
+        delete_file(book.cover)
+        #os.remove(book.cover)
 
     return jsonify(code='1', msg='delete book succeed')
 
@@ -222,7 +244,8 @@ def delete_audio():
     db.session.commit()
 
     if audio.file_url:
-        os.remove(audio.file_url)
+        delete_file(audio.file_url)
+        #os.remove(audio.file_url)
 
     return jsonify(code='1', msg='delete audio succeed')
 
@@ -274,13 +297,20 @@ def update_book():
     cover_path = os.path.join(COVER_DIR, cover_name)
     book_path = os.path.join(BOOK_DIR, book_name)
 
+    if c_book.cover:
+        delete_file(c_book.cover)
+
+    if c_book.file_url:
+        delete_file(c_book.file_url)
 
     if cover.filename:
-        cover.save(cover_path)
+        save_file(cover_path, cover)
+        #cover.save(cover_path)
         d['cover'] = cover_path
 
     if book.filename:
-        book.save(book_path)
+        save_file(book_path, book)
+        #book.save(book_path)
         d['file_url'] = book_path
 
     c_book.update(d)
@@ -316,8 +346,12 @@ def update_audio():
 
     audio_path = os.path.join(AUDIO_DIR, audio_name)
 
+    if c_audio.file_url:
+        delete_file(c_audio.file_url)
+
     if audio.filename:
-        audio.save(audio_path)
+        save_file(audio_path, audio)
+        #audio.save(audio_path)
         d['file_url'] = audio_path
 
     c_audio.update(d)
@@ -325,3 +359,30 @@ def update_audio():
 
     return jsonify(code='1', msg='update audio succeed')
 
+@app.route('/api/init_db', methods=['GET'])
+def create_db():
+    db.create_all()
+    kami = User('-', '-', 'kami', 'admin')
+    db.session.add(kami)
+    db.session.commit()
+
+    kami = User.query.first()
+
+    book1 = Book(u'吃药手册', kami._id)
+    book2 = Book(u'治病指南', kami._id)
+
+    audio1 = Audio('', kami._id, 1)
+    audio2 = Audio('', kami._id, 2)
+
+    for k in [book1, book2, audio1, audio2]:
+        db.session.add(k)
+
+    db.session.commit()
+
+    return 'ok'
+
+@app.route('/api/debug', methods=['GET'])
+def de():
+    import sys
+    str = ' '.join(sys.path)
+    return str

@@ -8,13 +8,13 @@ class User(db.Model):
     __tablename__ = 'user'
 
     _id = db.Column(db.Integer, primary_key=True)
-    id = db.Column(db.String, unique=True)
-    username = db.Column(db.String)
-    password = db.Column(db.String)
-    email = db.Column(db.String)
+    id = db.Column(db.String(200), unique=True)
+    username = db.Column(db.String(200))
+    password = db.Column(db.String(200))
+    email = db.Column(db.String(200))
     date = db.Column(db.DateTime)
 
-    type = db.Column(db.String)
+    type = db.Column(db.String(200))
 
     def __init__(self, uid, password, username='',
                  user_type='', email='', date=datetime.datetime.today()):

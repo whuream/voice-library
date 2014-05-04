@@ -8,12 +8,12 @@ class Book(db.Model):
     __tablename__ = 'book'
 
     _id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
-    author = db.Column(db.String)
-    cover = db.Column(db.String)
-    content = db.Column(db.String)
-    file_url = db.Column(db.String)
-    description = db.Column(db.String)
+    name = db.Column(db.String(200), unique=True)
+    author = db.Column(db.String(200))
+    cover = db.Column(db.String(200))
+    content = db.Column(db.String(200))
+    file_url = db.Column(db.String(200))
+    description = db.Column(db.String(2000))
     chapter_number = db.Column(db.Integer)
     date = db.Column(db.DateTime)
 
