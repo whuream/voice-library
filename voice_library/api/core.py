@@ -2,11 +2,12 @@
 __author__ = 'SuTong'
 
 from voice_library import *
-from flask import request, session, jsonify
+from flask import request, session, jsonify, send_file
 from sqlalchemy.sql.expression import and_
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
+
 
 def save_file(file_name, f):
     if PLATFORM == 'sae':
@@ -14,7 +15,8 @@ def save_file(file_name, f):
         bucket.put()
         bucket.put_object(file_name, f)
     elif PLATFORM == 'local':
-        f.save(os.path.join(BASEDIR, file_name))
+        f.save(os.path.join(FILE_BASE_DIR, BASEDIR, file_name))
+
 
 def get_file_url(file_name):
     if PLATFORM == 'sae':
@@ -22,7 +24,8 @@ def get_file_url(file_name):
         bucket.put()
         return bucket.generate_url(file_name)
     else:
-        return os.path.join(BASEDIR, file_name)
+        return FILE_BASE_URL + BASEDIR + '/' + file_name
+
 
 def delete_file(path):
     if PLATFORM == 'sae':
@@ -30,13 +33,19 @@ def delete_file(path):
         bucket.put()
         bucket.delete_object(path)
     else:
-        try:
-            os.remove(os.path.join(BASEDIR, path))
-        finally:
-            pass
+        os.remove(os.path.join(BASEDIR, path))
+
+
+@app.route('/%s/<path:file_name>' % BASEDIR, methods=['GET'])
+def get_file(file_name):
+    path = os.path.join(FILE_BASE_DIR, BASEDIR, file_name)
+    print path
+    return send_file(path)
+
 
 @app.route('/api/verify_user', methods=['POST'])
 def verify_user():
+    print os.path.abspath(os.path.curdir)
     id = request.form['id']
     password = request.form['password']
 
@@ -144,16 +153,16 @@ def insert_book():
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
 
-    cover_path = (os.path.join(COVERDIR, file_name + '.' + secure_filename(cover.filename).split('.')[-1]))\
-        if not cover else ''
-    book_path = (os.path.join(BOOKDIR, file_name + '.' + secure_filename(book.filename).split('.')[-1]))\
-        if not book else ''
+    cover_path = os.path.join(COVERDIR, file_name + '.' + secure_filename(cover.filename).split('.')[-1])\
+        if cover else ''
+    book_path = os.path.join(BOOKDIR, file_name + '.' + secure_filename(book.filename).split('.')[-1])\
+        if book else ''
 
     if cover_path:
         save_file(cover_path, cover)
 
     if book_path:
-        save_file(cover_path, book)
+        save_file(book_path, book)
 
     new_book = Book(name, 1, chapter_number, '', book_path, author, cover_path, description)
     db.session.add(new_book)
@@ -180,10 +189,10 @@ def insert_audio():
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
 
-    audio_path = (os.path.join(AUDIO_DIR, file_name + '.' +secure_filename(audio.filename).split('.')[-1]))\
-        if not audio else ''
+    audio_path = os.path.join(AUDIODIR, file_name + '.' +secure_filename(audio.filename).split('.')[-1])\
+        if audio else ''
 
-    if audio.path:
+    if audio_path:
         save_file(audio_path, audio)
 
     new_audio = Audio(audio_path, 1, book._id, chapter_number, description)
@@ -295,23 +304,23 @@ def update_book():
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
 
     cover_path = os.path.join(COVERDIR, file_name + '.' + secure_filename(cover.filename).split('.')[-1])\
-        if not cover else ''
+        if cover else ''
 
     book_path = os.path.join(BOOKDIR, file_name + '.' + secure_filename(book.filename).split('.')[-1])\
-        if not book else ''
+        if book else ''
 
-    if c_book.cover:
-        delete_file(c_book.cover)
+    if c_book.first().cover:
+        delete_file(c_book.first().cover)
 
-    if c_book.file_url:
-        delete_file(c_book.file_url)
+    if c_book.first().file_url:
+        delete_file(c_book.first().file_url)
 
-    if cover.filename:
+    if cover_path:
         save_file(cover_path, cover)
 
         d['cover'] = cover_path
 
-    if book.filename:
+    if book_path:
         save_file(book_path, book)
 
         d['file_url'] = book_path
@@ -344,10 +353,10 @@ def update_audio():
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
     audio_path = os.path.join(AUDIODIR, file_name + '.' +secure_filename(audio.filename).split('.')[-1])\
-        if not audio else ''
+        if audio else ''
 
-    if c_audio.file_url:
-        delete_file(c_audio.file_url)
+    if c_audio.first().file_url:
+        delete_file(c_audio.first().file_url)
 
     if audio_path:
         save_file(audio_path, audio)

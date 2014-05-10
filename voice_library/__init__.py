@@ -1,7 +1,7 @@
 # encoding: utf-8
 __author__ = 'SuTong'
 
-from seetings import *
+from settings import *
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -32,14 +32,18 @@ if PLATFORM == 'local':
         if not os.path.exists(t):
             os.makedirs(t)
 
-class nullpool_SQLAlchemy(SQLAlchemy):
-    def apply_driver_hacks(self, apps, info, options):
-        super(nullpool_SQLAlchemy, self).apply_driver_hacks(apps, info, options)
-        from sqlalchemy.pool import NullPool
-        options['poolclass'] = NullPool
-        del options['pool_size']
+if PLATFORM == 'sae':
+    class nullpool_SQLAlchemy(SQLAlchemy):
+        def apply_driver_hacks(self, apps, info, options):
+            super(nullpool_SQLAlchemy, self).apply_driver_hacks(apps, info, options)
+            from sqlalchemy.pool import NullPool
+            options['poolclass'] = NullPool
+            del options['pool_size']
 
-db = nullpool_SQLAlchemy(app)
+    db = nullpool_SQLAlchemy(app)
+elif PLATFORM =='local':
+    db = SQLAlchemy(app)
+
 
 from module.audio import Audio
 from module.book import Book
