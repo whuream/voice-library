@@ -9,6 +9,3 @@ from flask import render_template
 def home():
     return render_template('test.html')
 
-
-def run(_debug=True):
-    app.run(debug=_debug)

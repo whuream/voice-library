@@ -8,22 +8,32 @@ import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
-def save_file(path, file):
-    bucket = Bucket('t')
+def save_file(file_name, f):
+    if PLATFORM == 'sae':
+        bucket = Bucket(BUCKET_NAME)
+        bucket.put()
+        bucket.put_object(file_name, f)
+    elif PLATFORM == 'local':
+        f.save(os.path.join(BASEDIR, file_name))
 
-    bucket.put()
-
-    bucket.put_object(path, file)
-
-def get_file_url(path):
-    bucket = Bucket('t')
-    bucket.put()
-    return bucket.generate_url(path)
+def get_file_url(file_name):
+    if PLATFORM == 'sae':
+        bucket = Bucket(BUCKET_NAME)
+        bucket.put()
+        return bucket.generate_url(file_name)
+    else:
+        return os.path.join(BASEDIR, file_name)
 
 def delete_file(path):
-    bucket = Bucket('t')
-    bucket.put()
-    bucket.delete_object(path)
+    if PLATFORM == 'sae':
+        bucket = Bucket(BUCKET_NAME)
+        bucket.put()
+        bucket.delete_object(path)
+    else:
+        try:
+            os.remove(os.path.join(BASEDIR, path))
+        finally:
+            pass
 
 @app.route('/api/verify_user', methods=['POST'])
 def verify_user():
@@ -33,8 +43,7 @@ def verify_user():
     user = User.query.filter(and_(User.id == id, User.password == password)).first()
     if user:
         session['uid'] = user._id
-        #print session.viewitems()
-        #print dir(session)
+
         return jsonify(code='1', msg='succeed, setting cookies')
     else:
         return jsonify(code='0', msg='failed, invalid user_id or password')
@@ -52,11 +61,15 @@ def get_book_list():
     book_list = []
     ret = {'book': book_list}
     for book in books:
-        d = {'name': book.name, 'author': book.author, 'cover': get_file_url(book.cover),
-             'content': book.content, 'file_url': get_file_url(book.file_url), 'description': book.description,
-             'chapter_number': book.chapter_number, 'date': book.date}
+        d = {'name': book.name,
+             'author': book.author,
+             'cover': get_file_url(book.cover),
+             'content': book.content,
+             'file_url': get_file_url(book.file_url),
+             'description': book.description,
+             'chapter_number': book.chapter_number,
+             'date': book.date}
         # TODO add uploader 's id here
-        #print jsonify(**d).get_data()
         ret['book'].append(d)
 
     return jsonify(**ret)
@@ -65,18 +78,22 @@ def get_book_list():
 @app.route('/api/get_book_info', methods=['POST'])
 def get_book_info():
     book_name = request.form['book_name']
+
     book = Book.query.filter(Book.name == book_name).first()
+
     if not book:
         return jsonify(code='0', msg='invalid book id')
+
     else:
         audio_list = []
         ret = {'audio': audio_list}
-        print book.audios
+
         for audio in book.audios:
-            d = {'file_url': get_file_url(audio.file_url), 'description': audio.description,
-                 'chapter_number': audio.chapter_number, 'user_id': audio.user_id,
+            d = {'file_url': get_file_url(audio.file_url),
+                 'description': audio.description,
+                 'chapter_number': audio.chapter_number,
+                 'user_id': audio.user_id,
                  'audio_id': audio._id}
-            #print jsonify(**d).get_data()
             ret['audio'].append(d)
 
         return jsonify(**ret)
@@ -86,8 +103,10 @@ def get_book_info():
 def get_user_info():
     id = request.form['id']
     user = User.query.filter(User.id == id).first()
+
     if not user:
         return jsonify(code='0', msg='invalid user id')
+
     else:
         ret = {'name': user.username,
                'email': user.email, 'type': user.type}
@@ -124,25 +143,17 @@ def insert_book():
         return jsonify(code='0', msg='this book name has been used')
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
-    #print file_name
 
-    cover_name = file_name + '.' +secure_filename(cover.filename).split('.')[-1]
-    book_name = file_name + '.' + secure_filename(book.filename).split('.')[-1]
+    cover_path = (os.path.join(COVERDIR, file_name + '.' + secure_filename(cover.filename).split('.')[-1]))\
+        if not cover else ''
+    book_path = (os.path.join(BOOKDIR, file_name + '.' + secure_filename(book.filename).split('.')[-1]))\
+        if not book else ''
 
-    cover_path = os.path.join(COVER_DIR, cover_name)
-    book_path = os.path.join(BOOK_DIR, book_name)
-
-    if cover.filename:
-        #save_file('1.txt', 'hello, world')
+    if cover_path:
         save_file(cover_path, cover)
-        #cover.save(cover_path)
-    else:
-        cover_path = ''
-    if book.filename:
-        save_file(book_path, book)
-        #book.save(book_path)
-    else:
-        book_path = ''
+
+    if book_path:
+        save_file(cover_path, book)
 
     new_book = Book(name, 1, chapter_number, '', book_path, author, cover_path, description)
     db.session.add(new_book)
@@ -164,23 +175,19 @@ def insert_audio():
     if not book:
         return jsonify(code='0', msg='invalid book id')
 
-    if not 0 < int(chapter_number) <= book.chapter_number:
-        #print chapter_number
-        #print book.chapter_number
+    if not (0 < int(chapter_number) <= book.chapter_number):
         return jsonify(code='0', msg='invalid chapter number')
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
-    audio_name = file_name + '.' +secure_filename(audio.filename).split('.')[-1]
 
-    audio_path = os.path.join(AUDIO_DIR, audio_name)
+    audio_path = (os.path.join(AUDIO_DIR, file_name + '.' +secure_filename(audio.filename).split('.')[-1]))\
+        if not audio else ''
 
-    if audio.filename:
+    if audio.path:
         save_file(audio_path, audio)
-        #audio.save(audio_path)
-    else:
-        audio_path = ''
 
     new_audio = Audio(audio_path, 1, book._id, chapter_number, description)
+
     db.session.add(new_audio)
     db.session.commit()
 
@@ -222,11 +229,9 @@ def delete_book():
     db.session.commit()
 
     if book.file_url:
-        #os.remove(book.file_url)
         delete_file(book.file_url)
     if book.cover:
         delete_file(book.cover)
-        #os.remove(book.cover)
 
     return jsonify(code='1', msg='delete book succeed')
 
@@ -245,7 +250,6 @@ def delete_audio():
 
     if audio.file_url:
         delete_file(audio.file_url)
-        #os.remove(audio.file_url)
 
     return jsonify(code='1', msg='delete audio succeed')
 
@@ -289,13 +293,12 @@ def update_book():
          'chapter_number': chapter_number}
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
-    #print file_name
 
-    cover_name = file_name + '.' + secure_filename(cover.filename).split('.')[-1]
-    book_name = file_name + '.' + secure_filename(book.filename).split('.')[-1]
+    cover_path = os.path.join(COVERDIR, file_name + '.' + secure_filename(cover.filename).split('.')[-1])\
+        if not cover else ''
 
-    cover_path = os.path.join(COVER_DIR, cover_name)
-    book_path = os.path.join(BOOK_DIR, book_name)
+    book_path = os.path.join(BOOKDIR, file_name + '.' + secure_filename(book.filename).split('.')[-1])\
+        if not book else ''
 
     if c_book.cover:
         delete_file(c_book.cover)
@@ -305,12 +308,12 @@ def update_book():
 
     if cover.filename:
         save_file(cover_path, cover)
-        #cover.save(cover_path)
+
         d['cover'] = cover_path
 
     if book.filename:
         save_file(book_path, book)
-        #book.save(book_path)
+
         d['file_url'] = book_path
 
     c_book.update(d)
@@ -335,29 +338,26 @@ def update_audio():
     book = c_audio.first().book
 
     if not 0 < int(chapter_number) <= book.chapter_number:
-        #print chapter_number
-        #print book.chapter_number
         return jsonify(code='0', msg='invalid chapter number')
 
     d = {'chapter_number': chapter_number, 'description': description}
 
     file_name = datetime.today().strftime('%Y%m%d%H%M%S%f')
-    audio_name = file_name + '.' +secure_filename(audio.filename).split('.')[-1]
-
-    audio_path = os.path.join(AUDIO_DIR, audio_name)
+    audio_path = os.path.join(AUDIODIR, file_name + '.' +secure_filename(audio.filename).split('.')[-1])\
+        if not audio else ''
 
     if c_audio.file_url:
         delete_file(c_audio.file_url)
 
-    if audio.filename:
+    if audio_path:
         save_file(audio_path, audio)
-        #audio.save(audio_path)
         d['file_url'] = audio_path
 
     c_audio.update(d)
     db.session.commit()
 
     return jsonify(code='1', msg='update audio succeed')
+
 
 @app.route('/api/init_db', methods=['GET'])
 def create_db():
@@ -380,9 +380,3 @@ def create_db():
     db.session.commit()
 
     return 'ok'
-
-@app.route('/api/debug', methods=['GET'])
-def de():
-    import sys
-    str = ' '.join(sys.path)
-    return str
