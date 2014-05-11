@@ -5,10 +5,10 @@ import os
 # constants
 
 # 'sae' or 'local'
-PLATFORM = 'local'
+PLATFORM = 'sae'
 
 BASEDIR = 'data'
-BUCKET_NAME = 'data'
+BUCKET_NAME = 't'
 
 BOOKDIR = 'book'
 AUDIODIR = 'audio'

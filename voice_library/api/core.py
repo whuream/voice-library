@@ -5,6 +5,7 @@ from voice_library import *
 from flask import request, session, jsonify, send_file
 from sqlalchemy.sql.expression import and_
 import os
+import sys
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
@@ -389,3 +390,15 @@ def create_db():
     db.session.commit()
 
     return 'ok'
+
+
+if PLATFORM == 'sae':
+    @app.route('/api/debug', methods=['GET'])
+    def sae_debug():
+        bucket = Bucket(BUCKET_NAME)
+        bucket.put()
+        return '%r' % [i for i in bucket.list()]
+
+@app.route('/api/debug2', methods=['GET'])
+def sae_debug2():
+    return '%r' % sys.path
