@@ -1,0 +1,142 @@
+database tables:
+    user:
+        _id
+        id
+        username
+        password
+        email
+        date
+        type
+
+        books
+        audios
+        likes
+
+    book:
+        _id
+        name
+        author
+        cover
+        content
+        file_url
+        description
+        chapter_number
+        date
+        user_id = user._id
+
+        user
+
+        audios
+        likes
+
+    audio:
+        _id
+        file_url
+        description
+        chapter_number
+        user_id = user._id
+        book_id = book._id
+
+        user
+        book
+
+    like:
+        _id
+        date
+
+        user_id = user._id
+        book._id = book._id
+
+        user
+        book
+
+html form:
+    log in:
+        id  = user.id
+        password = password
+
+        set cookie: uid = user._id
+
+    log out:
+        set cookie: uid = -1
+
+    get book list:
+        name = book.name
+        author = book.author
+        cover = (book.cover)
+        content = book.content
+        file_url = (book.file_url)
+        description = book.description
+        chapter_number = book.chapter_number
+        date = book.date
+
+    get book info:
+        book_name =book.name
+
+        file_url = (audio.file_url)
+        description =audio.description
+        chapter_number = audio.chapter_number
+        user_id = audio.user_id
+        audio_id = audio._id
+
+    get user info:
+       id = user.id
+
+       name = user.username
+       email = user.email
+       type = user.type
+
+    insert user:
+        id = user.id
+        password = user.password
+
+    insert book:
+        name = book.name
+        author = book.author
+        description = book.description
+        chapter_number = book.chapter_number
+        cover = (book.cover)
+        book = (book.file_url)
+
+    insert audio:
+        book_name: audio.name
+        chapter_number = audio.chapter_number
+        description = audio.description
+        audio = (audio.file_url)
+        book = audio.book
+
+    delete user:
+        name = user.id
+        password = user.password
+
+    delete book:
+        book_name = book.name
+
+    delete audio:
+        id = audio._id
+
+    update user:
+        name = user.name
+        password = user.password
+
+        new_pass = user.password
+
+    update_book:
+        name = book.name
+
+        new_name = book.name
+        author = book.author
+        description = book.description
+        chapter_number = book.chapter_number
+        cover = (book.cover)
+        book  = (book.file_url)
+
+    update audio:
+        audio_id = audio._id
+
+        chapter_number = audio.chapter_number
+        description = audio.description
+        audio = (audio.file_url)
+
+
+

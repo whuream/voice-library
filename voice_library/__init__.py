@@ -48,6 +48,6 @@ elif PLATFORM =='local':
 from module.audio import Audio
 from module.book import Book
 from module.user import User
-
+from module.like import Like
 from api import *
 
