@@ -4,16 +4,16 @@ __author__ = 'SuTong'
 from voice_library import db
 import datetime
 
-class Like(db.Moudle):
+class Like(db.Model):
     __tablename__ = 'like'
 
     _id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user._id'))
-    user = db.relationship('User', primaryjoin='Book.user_id == User._id', backref='likes')
+    user = db.relationship('User', primaryjoin='Like.user_id == User._id', backref='likes')
 
     book_id = db.Column(db.Integer, db.ForeignKey('book._id'))
-    book = db.relationship('Book', primaryjoin='Audio.book_id == Book._id', backref='likes')
+    book = db.relationship('Book', primaryjoin='Like.book_id == Book._id', backref='likes')
 
     date = db.Column(db.DateTime)
 

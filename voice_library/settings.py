@@ -5,7 +5,7 @@ import os
 # constants
 
 # 'sae' or 'local'
-PLATFORM = 'sae'
+PLATFORM = 'local'
 
 BASEDIR = 'data'
 BUCKET_NAME = 't'
