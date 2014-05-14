@@ -61,7 +61,7 @@ def verify_user():
 
 @app.route('/api/logout', methods=['GET'])
 def logout():
-    session['uid'] = None
+    session.pop('uid', None)
     return jsonify(code='1', msg='succeed, cleaning cookies')
 
 
@@ -78,7 +78,8 @@ def get_book_list():
              'file_url': get_file_url(book.file_url),
              'description': book.description,
              'chapter_number': book.chapter_number,
-             'date': book.date}
+             'date': book.date,
+             'uid': book.user.id}
         # TODO add uploader 's id here
         ret['book'].append(d)
 
@@ -102,7 +103,7 @@ def get_book_info():
             d = {'file_url': get_file_url(audio.file_url),
                  'description': audio.description,
                  'chapter_number': audio.chapter_number,
-                 'user_id': audio.user_id,
+                 'user_id': audio.user.id,
                  'audio_id': audio._id}
             ret['audio'].append(d)
 
@@ -140,6 +141,11 @@ def insert_user():
 
 @app.route('/api/insert_book', methods=['POST'])
 def insert_book():
+    if 'uid' not in session:
+        return jsonify(code='0', msg = 'please log in first')
+
+    uid = session['uid']
+
     name = request.form['name']
     author = request.form['author']
     description = request.form['description']
@@ -165,7 +171,7 @@ def insert_book():
     if book_path:
         save_file(book_path, book)
 
-    new_book = Book(name, 1, chapter_number, '', book_path, author, cover_path, description)
+    new_book = Book(name, uid, chapter_number, '', book_path, author, cover_path, description)
     db.session.add(new_book)
     db.session.commit()
 
@@ -174,6 +180,11 @@ def insert_book():
 
 @app.route('/api/insert_audio', methods=['POST'])
 def insert_audio():
+    if 'uid' not in session:
+        return jsonify(code = '0', msg = 'please log in first')
+
+    uid = session['uid']
+
     book_name = request.form['book_name']
     chapter_number = request.form['chapter_number']
     description = request.form['description']
@@ -196,7 +207,7 @@ def insert_audio():
     if audio_path:
         save_file(audio_path, audio)
 
-    new_audio = Audio(audio_path, 1, book._id, chapter_number, description)
+    new_audio = Audio(audio_path, uid, book._id, chapter_number, description)
 
     db.session.add(new_audio)
     db.session.commit()
@@ -225,12 +236,20 @@ def delete_user():
 
 @app.route('/api/delete_book', methods=['POST'])
 def delete_book():
+    if 'uid' not in session:
+        return jsonify(code='0', msg='please log in first')
+
+    uid = session['uid']
+
     book_name = request.form['book_name']
 
     book = Book.query.filter(Book.name == book_name).first()
 
     if not book:
         return jsonify(code='0', msg='invalid book name')
+
+    if book.user._id != uid:
+        return jsonify(code='0', msg='illegal operation')
 
     if book.audios:
         return jsonify(code='0', msg='this book has audio files, delete those files first')
@@ -248,12 +267,20 @@ def delete_book():
 
 @app.route('/api/delete_audio', methods=['POST'])
 def delete_audio():
+    if 'uid' not in session:
+        return jsonify(code='0', msg='please log in first')
+
+    uid = session['uid']
+
     audio_id = request.form['id']
 
     audio = Audio.query.filter(Audio._id == audio_id).first()
 
     if not audio:
         return jsonify(code='0', msg='invalid audio id')
+
+    if audio.user._id != uid:
+        return jsonify(code='0', msg='illegal operation')
 
     db.session.delete(audio)
     db.session.commit()
@@ -283,6 +310,11 @@ def update_user():
 
 @app.route('/api/update_book', methods=['POST'])
 def update_book():
+    if 'uid' not in session:
+        return jsonify(code='0', msg='please log in first')
+
+    uid = session['uid']
+
     name = request.form['name']
     new_name = request.form['new_name']
     author = request.form['author']
@@ -295,6 +327,9 @@ def update_book():
     c_book = Book.query.filter(Book.name == name)
     if not c_book.first():
         return jsonify(code='0', msg='invalid book name')
+
+    if c_book.first().user._id != uid:
+        return jsonify(code='0', msg='illegal operation')
 
     #if chapter_number < c_book.first().chapter_number:
     #    return jsonify(code='0', msg='chapter number error')
@@ -334,6 +369,11 @@ def update_book():
 
 @app.route('/api/update_audio', methods=['POST'])
 def update_audio():
+    if 'uid' not in session:
+        return jsonify(code='0', msg='please log in first')
+
+    uid = session['uid']
+
     audio_id = request.form['audio_id']
     chapter_number = request.form['chapter_number']
     description = request.form['description']
@@ -342,8 +382,11 @@ def update_audio():
 
     c_audio = Audio.query.filter(Audio._id == audio_id)
 
-    if not c_audio:
+    if not c_audio.first():
         return jsonify(code='0', msg='invalid audio id')
+
+    if c_audio.first().user._id != uid:
+        return jsonify(code='0', msg='illegal operation')
 
     book = c_audio.first().book
 
