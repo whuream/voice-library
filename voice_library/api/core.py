@@ -37,7 +37,7 @@ def delete_file(path):
         os.remove(os.path.join(BASEDIR, path))
 
 
-@app.route('/%s/<path:file_name>' % BASEDIR, methods=['GET'])
+@app.route('/%s/<file_name>' % BASEDIR, methods=['GET'])
 def get_file(file_name):
     path = os.path.join(FILE_BASE_DIR, BASEDIR, file_name)
     print path
@@ -412,9 +412,51 @@ def update_audio():
     return jsonify(code='1', msg='update audio succeed')
 
 
+@app.route('/api/insert_love', methods=['GET'])
+def insert_love():
+    love = request.args.get('a', None)
+    book_name = request.args.get('name', None)
+
+    if 'uid' not in session:
+        return jsonify(code='0', msg='please log in first')
+
+    uid = session['uid']
+
+    if love == '?':
+        book_name = [item.book.name for item in Like.query.filter(Like.user_id == uid)]
+        ret = {'book name': book_name}
+
+        return jsonify(**ret)
+
+    c_book = Book.query.filter(Book.name == book_name).first()
+
+    if not c_book:
+        return jsonify(code='0', msg='invalid book name')
+
+    if love == 'love':
+        like = Like(uid, c_book._id)
+
+        db.session.add(like)
+        db.session.commit()
+        return jsonify(code='1', msg='ok')
+
+    if love == 'dislove':
+        c_like = Like.query.filter(and_(Like.user_id == uid, Like.book == c_book)).first()
+
+        if not c_like:
+            return jsonify(code='0', msg='book not in love list')
+
+        db.session.delete(c_like)
+        db.session.commit()
+        return jsonify(code='1', msg='ok')
+
+
+
 @app.route('/api/init_db', methods=['GET'])
 def create_db():
     db.create_all()
+
+    """
     kami = User('-', '-', 'kami', 'admin')
     db.session.add(kami)
     db.session.commit()
@@ -431,6 +473,7 @@ def create_db():
         db.session.add(k)
 
     db.session.commit()
+    """
 
     return 'ok'
 
