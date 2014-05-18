@@ -433,7 +433,12 @@ def insert_love():
     if not c_book:
         return jsonify(code='0', msg='invalid book name')
 
+    c_like = Like.query.filter(and_(Like.user_id == uid, Like.book == c_book)).first()
+
     if love == 'love':
+        if c_like:
+            return jsonify(code='0', msg='book has been in love list')
+
         like = Like(uid, c_book._id)
 
         db.session.add(like)
@@ -441,8 +446,6 @@ def insert_love():
         return jsonify(code='1', msg='ok')
 
     if love == 'dislove':
-        c_like = Like.query.filter(and_(Like.user_id == uid, Like.book == c_book)).first()
-
         if not c_like:
             return jsonify(code='0', msg='book not in love list')
 
